@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library CRUD Dashboard</title>
+    <style>
+        /* Full-page background */
+ body {
+     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+     margin: 0;
+     padding: 20px;
+     color: #333;
+     background-image: url('https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1470&q=80');
+     background-size: cover;
+     background-position: center;
+     background-attachment: fixed;
+ }
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(0,0,0,0.6), rgba(0,0,0,0.3));
+    animation: gradientMove 15s ease infinite;
+    z-index: -1;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Headings */
+h1 {
+
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 30px;
+    background: linear-gradient(90deg, #6a11cb, #2575fc); /* vibrant gradient */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+h2 {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 20px;
+    background: linear-gradient(120deg, #f1c40f, #e67e22); /* golden-orange gradient */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+
+ #message {
+     text-align: center;
+     font-weight: bold;
+     margin-bottom: 20px;
+ }
+
+ /* Success / Error */
+ .success { color: #2ecc71; }
+ .error { color: #e74c3c; }
+
+ /* Book Cards Container */
+ .cards-container {
+     display: grid;
+     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+     gap: 20px;
+     margin-bottom: 40px;
+ }
+
+ /* Book Card */
+ .book-card {
+     background: rgba(255, 255, 255, 0.95); /* slightly transparent for background image */
+     padding: 20px;
+     border-radius: 12px;
+     box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+     transition: transform 0.3s, box-shadow 0.3s;
+     display: flex;
+     flex-direction: column;
+     justify-content: space-between;
+ }
+.book-card:hover {
+    transform: translateY(-7px) scale(1.03);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.25), 0 0 15px rgba(46,204,113,0.3);
+}
+
+
+ .book-info { margin-bottom: 15px; }
+ .book-info p { margin: 5px 0; }
+
+ /* Action Buttons */
+ .card-buttons {
+     display: flex;
+     justify-content: space-between;
+ }
+ .card-buttons button {
+     flex: 1;
+     padding: 8px 12px;
+     margin: 2px;
+     border: none;
+     border-radius: 6px;
+     font-weight: bold;
+     cursor: pointer;
+     transition: 0.3s;
+     color: white;
+ }
+ .edit { background-color: #f39c12; }
+ .delete { background-color: #e74c3c; }
+ .edit:hover, .delete:hover { opacity: 0.85; }
+
+ /* Form Card */
+.form-container {
+    max-width: 500px;
+    margin: 0 auto 40px;
+    background: rgba(255, 255, 255, 0.95); /* semi-transparent for background image */
+    backdrop-filter: blur(10px); /* adds glass-like blur */
+    padding: 25px 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.form-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Input Fields */
+.form-container input {
+    width: 93%;
+    padding: 12px 15px;
+    margin-bottom: 18px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: 0.3s;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.form-container input:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 8px rgba(52, 152, 219, 0.4);
+}
+
+/* Buttons */
+.form-container button {
+    width: 48%;
+    padding: 12px 0;
+    margin: 1%;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+    font-size: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+
+/* Save Button */
+.save {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    box-shadow: 0 4px 10px rgba(46, 204, 113, 0.4);
+}
+
+
+/* Reset Button */
+.reset {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);
+}
+
+.save:hover, .reset:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(46,204,113,0.6);
+    opacity: 1;
+}
+
+
+
+
+
+
+ /* Carousel Scroll Area */
+ .carousel {
+     display: flex;
+     position: relative;
+     align-items: center;
+     overflow-x: auto;
+     scroll-snap-type: x mandatory;
+     scroll-behavior: smooth;
+     gap: 20px;
+     padding: 20px 0;
+     margin-bottom: 40px;
+ }
+ .carousel .book-card:hover {
+    box-shadow: 0 12px 25px rgba(0,0,0,0.35), 0 0 10px rgba(52,152,219,0.4);
+}
+
+@keyframes autoScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+ .carousel::-webkit-scrollbar { display: none; }
+
+ /* Carousel Book Card */
+ .book-card {
+     flex: 0 0 250px;
+     scroll-snap-align: start;
+ }
+
+ /* Carousel Buttons */
+ .carousel-btn {
+     background-color: rgba(52, 152, 219, 0.8);
+     color: white;
+     border: none;
+     font-size: 2rem;
+     padding: 10px;
+     cursor: pointer;
+     border-radius: 50%;
+     transition: 0.3s;
+     z-index: 1;
+ }
+ .carousel-btn:hover { background-color: rgba(41, 128, 185, 0.85); }
+ .carousel-btn.left { margin-right: 10px; }
+ .carousel-btn.right { margin-left: 10px; }
+
+ /* Responsive */
+ @media (max-width: 600px) {
+     .cards-container { grid-template-columns: 1fr; }
+     .form-container button { width: 100%; margin-bottom: 10px; }
+ }
+
+    </style>
+</head>
+<body>
+
+<h1>Library Dashboard</h1>
+
+<h2 style="text-align:center;">Add / Update Book</h2>
+<div class="form-container">
+    <input type="hidden" id="bookId">
+    <input type="text" id="title" placeholder="Title">
+    <input type="text" id="author" placeholder="Author">
+    <input type="text" id="genre" placeholder="Genre">
+    <input type="number" id="price" placeholder="Price" step="0.01">
+    <div style="display:flex; justify-content:space-between;">
+        <button class="save" onclick="saveBook()">Save</button>
+        <button class="reset" onclick="resetForm()">Reset</button>
+    </div>
+</div>
+<h2 style="text-align:center;">Books</h2>
+<div id="message"></div>
+<!-- Carousel Container -->
+<div class="carousel-container">
+    <button class="carousel-btn left" onclick="scrollCarousel(-1)">&#10094;</button>
+    <div class="carousel" id="cardsContainer">
+        <!-- Book cards will be injected here -->
+    </div>
+    <button class="carousel-btn right" onclick="scrollCarousel(1)">&#10095;</button>
+</div>
+
+
+
+
+<script>
+    const apiUrl = "http://localhost:8080/books";
+function scrollCarousel(direction) {
+    const container = document.getElementById("cardsContainer");
+    const cardWidth = container.querySelector('.book-card').offsetWidth + 20; // card width + gap
+    container.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
+}
+// Auto scroll carousel
+function autoScrollCarousel() {
+    const container = document.getElementById("cardsContainer");
+    const cardWidth = container.querySelector('.book-card')?.offsetWidth + 20 || 270;
+    let scrollAmount = 0;
+
+    setInterval(() => {
+        container.scrollBy({ left: 2, behavior: 'smooth' }); // scroll 2px per interval
+        scrollAmount += 2;
+        // If reached the end, scroll back to start
+        if(scrollAmount >= container.scrollWidth - container.clientWidth) {
+            container.scrollTo({ left: 0, behavior: 'smooth' });
+            scrollAmount = 0;
+        }
+    }, 20); // adjust speed (lower = faster)
+}
+    // Fetch all books and render as cards
+    function fetchBooks() {
+        fetch(apiUrl)
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById("cardsContainer");
+                container.innerHTML = "";
+                data.forEach(book => {
+                    container.innerHTML += `
+                        <div class="book-card">
+                            <div class="book-info">
+                                <p><strong>ID:</strong> ${book.id}</p>
+                                <p><strong>Title:</strong> ${book.title}</p>
+                                <p><strong>Author:</strong> ${book.author}</p>
+                                <p><strong>Genre:</strong> ${book.genre || ''}</p>
+                                <p><strong>Price:</strong> $${book.price}</p>
+                            </div>
+                            <div class="card-buttons">
+                                <button class="edit" onclick="editBook(${book.id})">Edit</button>
+                                <button class="delete" onclick="deleteBook(${book.id})">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+    }
+
+    fetchBooks();
+
+    // Save or update book
+    function saveBook() {
+        const id = document.getElementById("bookId").value;
+        const book = {
+            title: document.getElementById("title").value,
+            author: document.getElementById("author").value,
+            genre: document.getElementById("genre").value,
+            price: parseFloat(document.getElementById("price").value)
+        };
+
+        let method = id ? 'PUT' : 'POST';
+        let url = id ? `${apiUrl}/${id}` : apiUrl;
+
+        fetch(url, {
+            method: method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(book)
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('Error saving book');
+            return res.json();
+        })
+        .then(() => {
+            fetchBooks();
+            resetForm();
+            showMessage("Book saved successfully", "success");
+        })
+        .catch(err => showMessage(err, "error"));
+    }
+
+    // Edit book
+    function editBook(id) {
+        fetch(`${apiUrl}/${id}`)
+            .then(res => res.json())
+            .then(book => {
+                document.getElementById("bookId").value = book.id;
+                document.getElementById("title").value = book.title;
+                document.getElementById("author").value = book.author;
+                document.getElementById("genre").value = book.genre;
+                document.getElementById("price").value = book.price;
+            });
+    }
+
+    // Delete book
+    function deleteBook(id) {
+        if(confirm("Are you sure to delete this book?")) {
+            fetch(`${apiUrl}/${id}`, { method: 'DELETE' })
+                .then(res => {
+                    if (res.status === 204) {
+                        fetchBooks();
+                        showMessage("Book deleted successfully", "success");
+                    } else {
+                        throw new Error("Error deleting book");
+                    }
+                })
+                .catch(err => showMessage(err, "error"));
+        }
+    }
+
+    // Reset form
+    function resetForm() {
+        document.getElementById("bookId").value = '';
+        document.getElementById("title").value = '';
+        document.getElementById("author").value = '';
+        document.getElementById("genre").value = '';
+        document.getElementById("price").value = '';
+    }
+
+    // Show message
+    function showMessage(msg, type) {
+        const div = document.getElementById("message");
+        div.textContent = msg;
+        div.className = type;
+        setTimeout(() => div.textContent = '', 3000);
+    }
+</script>
+
+</body>
+</html>
